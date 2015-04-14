@@ -1,38 +1,53 @@
 package gorientdb
 
 import (
-    "testing"
-    "fmt"
+	"fmt"
+	"testing"
 )
 
 var config = OrientConfig{
-    "localhost",
-    2480,
-    "admin",
-    "admin",
-    "gorient",
+	"localhost",
+	2480,
+	"admin",
+	"admin",
+	"gorient",
 }
 
 var driver = NewDriver(config)
 
-func TestGetDatabaseInfo(t *testing.T){
-    data, err := driver.DatabaseInfo()
-    select {
-    case returnedError := <- err:
-        fmt.Println(returnedError)
+func TestGetDatabaseInfo(t *testing.T) {
+	data, err := driver.DatabaseInfo()
+
+    var blankTest interface{}
+    if data == blankTest || err != nil {
         t.Fail()
-    case <- data:
-        fmt.Println("Got data!")
+    } else {
+        fmt.Println(data)
     }
 }
 
 func TestQuery(t *testing.T) {
-    data, err := driver.Command("select @rid from user")
-    select {
-    case returnedError := <- err:
-        t.Error(returnedError)
-    case returnedData := <- data:
-        fmt.Println(returnedData)
+	data, err := driver.Command("select @rid from user")
+    if err != nil {
+        t.Fail()
+    } else {
+        fmt.Println(data)
     }
 }
 
+func TestCreateClass(t *testing.T) {
+	data, err := driver.Command("create class Node extends V")
+    if err != nil {
+        t.Fail()
+    } else {
+        fmt.Println(data)
+    }
+}
+
+func TestClassCount(t *testing.T) {
+    count := driver.GetCount("User", false)
+    fmt.Println(count)
+    if(count < 1) {
+        t.Fail()
+    }
+}
